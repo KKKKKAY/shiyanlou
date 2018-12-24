@@ -69,7 +69,16 @@ class UserData(object):
         
         return userdata
 
+class Calculator(object):
     
+    def __init__(self,config,userdata):
+        self.config=config
+        self.userdata=userdata
+
+
+
+
+
 if __name__=='__main__':
     
     args=Args(sys.argv)
