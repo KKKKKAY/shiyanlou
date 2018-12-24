@@ -55,9 +55,19 @@ class UserData(object):
 
     def _getUserData(self,path):
         userdata={}
+        filename=path
+        
+        with open(filename) as file:
+            for x in file:
+                if(x.count(",")==1):
+                    user_data=x.split(",")
+                    userdata[user_data[0].strip()]=float(user_data[1].strip())
+                else:
+                    print("USERDATA ERROR")
+                    return None
 
-
-
+        
+        return userdata
 
     
 if __name__=='__main__':
@@ -66,8 +76,12 @@ if __name__=='__main__':
     path=args.checkArgv()
     
     con=Config(path.get("config"))
-    print(con.config)
-    print(type(con.config))
+    user=UserData(path.get("user"))
+    
+    
+    if(con.config is not None and user.userdata is not None):
+        print(user)
+        print(type(user.userdata))
 
 
 
