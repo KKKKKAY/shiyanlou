@@ -2,7 +2,84 @@
 
 
 import sys
+import csv
 
+class Args(object):
+    
+    def __init__(self,argv):
+        self.argv=argv
+
+    def checkArgv(self):
+        args=self.argv[1:]
+        path_dir={}
+        if(len(args)==6):
+            con_index=args.index("-c")
+            con_path=args[con_index+1]
+            path_dir["config"]=con_path
+            
+            user_index=args.index("-d")
+            user_path=args[user_index+1]
+            path_dir["user"]=user_path
+            
+            gz_index=args.index("-o")
+            gz_path=args[gz_index+1]
+            path_dir["gongzi"]=gz_path
+
+        else:
+            print("Parameter Error")
+            
+        return path_dir
+
+
+class Config(object):
+    
+    def __init__(self,configPath):
+        self.config=self._getConfigData(configPath)
+
+    def _getConfigData(self,path):
+        config={}
+        filename=path
+        
+        with open(filename) as file:
+            for x in file:
+                config_data=x.split("=")
+                config[config_data[0].strip()]=float(config_data[1].strip())
+
+        return config
+ 
+
+class UserData(object):
+
+    def __init__(self,userPath):
+        self.userdata=self._getUserData(userPath)
+
+    def _getUserData(self,path):
+        userdata={}
+
+
+
+
+    
+if __name__=='__main__':
+    
+    args=Args(sys.argv)
+    path=args.checkArgv()
+    
+    con=Config(path.get("config"))
+    print(con.config)
+    print(type(con.config))
+
+
+
+
+
+    
+    
+
+
+   
+
+"""
 def insured_count(salary):
     insured=""
     old=0.08
@@ -39,8 +116,8 @@ def tax_count(salary,insured):
         else:
             tax=0
         return format(tax,".2f")
-
-
+"""
+"""
 if __name__=='__main__':
     if(len(sys.argv)>=2):
         output_item={}
@@ -64,7 +141,7 @@ if __name__=='__main__':
     else:
         print("Parameter Error")
 
-
+"""
 
 
 
