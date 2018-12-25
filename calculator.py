@@ -27,7 +27,8 @@ class Args(object):
 
         else:
             print("Parameter Error")
-            
+            exit()
+
         return path_dir
 
 
@@ -46,7 +47,7 @@ class Config(object):
                 config[config_data[0].strip()]=float(config_data[1].strip())
 
         return config
- 
+
 
 class UserData(object):
 
@@ -60,22 +61,96 @@ class UserData(object):
         with open(filename) as file:
             for x in file:
                 if(x.count(",")==1):
-                    user_data=x.split(",")
-                    userdata[user_data[0].strip()]=float(user_data[1].strip())
+                    user_data=x.strip().split(",")
+                    userdata[user_data[0].strip()]=user_data[1].strip()
                 else:
                     print("USERDATA ERROR")
-                    return None
+                    exit()
 
         
         return userdata
 
-class Calculator(object):
+
+
+
+
+
+class IncomeTaxCalculator(object):
     
-    def __init__(self,config,userdata):
-        self.config=config
+    
+
+    def __init__(self,userdata):
+        
         self.userdata=userdata
+    
+
+    def _calc_for_all_userdata(self):
+        incomes=[]
+        
+        for userid,income in self.userdata.items():
+            userincome=[]
+            userincome.append(userid)
+            userincome.append(income)
+            
+            insured=insuredCal(float(income))
+            userincome.append(insured)
+            
+            tax=taxCal(float(income),float(insured))
+            userincome.append(tax)
+            
+            incometax=format(float(income)-float(insured)-float(tax),".2f")
+            userincome.append(incometax)
+
+            incomes.append(userincome)
+        
+        return incomes
+            
+
+    def export(self,filename):
+        userincomes=self._calc_for_all_userdata()
+        
+        filename=filename
+        with open(filename,'w') as f:
+            csv.writer(f).writerows(userincomes)
+     
 
 
+
+def taxCal(salary,insured):
+    tax=""       
+    baseSalary=3500
+    gapSalary=salary-insured-baseSalary
+    
+    if(gapSalary>0 and gapSalary<=1500):
+        tax=gapSalary*0.03
+    elif(gapSalary>1500 and gapSalary<=4500):
+        tax=gapSalary*0.1-105
+    elif(gapSalary>4500 and gapSalary<=9000):
+        tax=gapSalary*0.2-555
+    elif(gapSalary>9000 and gapSalary<=35000):
+        tax=gapSalary*0.25-1005
+    elif(gapSalary>35000 and gapSalary<=55000):
+        tax=gapSalary*0.3-2755
+    elif(gapSalary>55000 and gapSalary<=80000):
+        tax=gapSalary*0.35-5505
+    elif(gapSalary>80000):
+        tax=gapSalary*0.45-13505
+    else:
+        tax=0
+    return format(tax,".2f")
+
+
+def insuredCal(income):
+    
+    
+    insuredFee=""
+    if income<con['JiShuL']:
+        insuredFee=con['JiShuL']*(con['YangLao']+con['YiLiao']+con['ShiYe']+con['GongShang']+con['ShengYu']+con['GongJiJin'])
+    elif income>con['JiShuH']:
+        insuredFee=con['JiShuH']*(con['YangLao']+con['YiLiao']+con['ShiYe']+con['GongShang']+con['ShengYu']+con['GongJiJin'])
+    else:
+        insuredFee=income*(con['YangLao']+con['YiLiao']+con['ShiYe']+con['GongShang']+con['ShengYu']+con['GongJiJin'])
+    return format(insuredFee,".2f")
 
 
 
@@ -84,13 +159,13 @@ if __name__=='__main__':
     args=Args(sys.argv)
     path=args.checkArgv()
     
-    con=Config(path.get("config"))
-    user=UserData(path.get("user"))
+    con=Config(path.get("config")).config
+    user=UserData(path.get("user")).userdata
+    
+    cal=IncomeTaxCalculator(user)
+    cal.export(path.get("gongzi"))
     
     
-    if(con.config is not None and user.userdata is not None):
-        print(user)
-        print(type(user.userdata))
 
 
 
